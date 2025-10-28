@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { View, TextInput, Alert, StyleSheet } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import React, { useState } from 'react';
+import { Alert, StyleSheet, TextInput } from 'react-native';
 import CustomButton from '../../components/Button';
-import { useWalletStore } from '../../store/useWalletStore';
 import { useCustomTheme } from '../../context/ThemeContext';
+import { useWalletStore } from '../../store/useWalletStore';
 
 export default function TransferScreen() {
   const { transfer } = useWalletStore();
@@ -81,7 +81,9 @@ export default function TransferScreen() {
         keyboardType="numeric"
       />
 
-      <CustomButton title="Kirim Transfer" onPress={handleTransfer} />
+      <CustomButton title="Kirim Transfer" 
+     style={{ backgroundColor: theme.colors.primary }} 
+      onPress={handleTransfer} />
     </ThemedView>
   );
 }

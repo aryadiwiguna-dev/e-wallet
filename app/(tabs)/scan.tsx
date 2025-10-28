@@ -1,9 +1,6 @@
-// app/(tabs)/scan.tsx
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Alert, Dimensions } from 'react-native';
 import { CameraView, Camera } from 'expo-camera';
-
-// Gunakan komponen dan hook yang sesuai
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import CustomButton from '../../components/Button';
@@ -107,7 +104,6 @@ export default function ScanScreen() {
   );
 }
 
-// Gunakan Dimensions untuk membuat overlay responsif
 const { width } = Dimensions.get('window');
 const overlayHeight = (width * 0.7); // Buat area fokus berbentuk persegi
 
@@ -149,11 +145,10 @@ const styles = StyleSheet.create({
     right: 0,
     padding: 20,
     alignItems: 'center',
-    // Beri latar belakang semi-transparan agar teks terbaca
     backgroundColor: 'rgba(0,0,0,0.3)',
   },
   instructionText: {
-    color: 'white', // Paksa putih agar kontras dengan latar gelap
+    color: 'white', 
     textAlign: 'center',
     marginBottom: 16,
     fontSize: 16,

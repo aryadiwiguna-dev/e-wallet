@@ -1,12 +1,9 @@
-// app/(tabs)/topup.tsx
-import React, { useState } from 'react';
-import { View, TextInput, Alert, ScrollView, StyleSheet } from 'react-native';
-import { List, RadioButton } from 'react-native-paper';
-
-// Gunakan komponen dan hook yang sesuai
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import CustomButton from '../../components/Button'
+import React, { useState } from 'react';
+import { Alert, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { RadioButton } from 'react-native-paper';
+import CustomButton from '../../components/Button';
 import { useCustomTheme } from '../../context/ThemeContext';
 import { TopUpItem, useTopUpStore } from '../../store/useTopUpStore';
 import { useWalletStore } from '../../store/useWalletStore';
@@ -22,12 +19,21 @@ export default function TopUpScreen() {
   const handleTopUp = () => {
     let finalAmount = selectedItem?.amount || 0;
     
-    if (!selectedItem) {
-      finalAmount = Number(customAmount);
-      if (isNaN(finalAmount) || finalAmount <= 0) {
+    const trimmed = customAmount.trim();
+    const hasCustom = trimmed !== '';
+
+    if (hasCustom) {
+      const parsed = Number(trimmed);
+      if (isNaN(parsed) || parsed <= 0) {
         Alert.alert('Error', 'Pilih nominal atau masukkan jumlah yang valid.');
         return;
       }
+      finalAmount = parsed;
+    } else if (selectedItem) {
+      finalAmount = selectedItem.amount;
+    } else {
+      Alert.alert('Error', 'Pilih nominal atau masukkan jumlah yang valid.');
+      return;
     }
 
     Alert.alert(
@@ -133,7 +139,7 @@ export default function TopUpScreen() {
         </View>
 
         <View style={dynamicStyles.buttonContainer}>
-          <CustomButton title="Top Up Sekarang" onPress={handleTopUp} />
+          <CustomButton style={{ backgroundColor: theme.colors.primary }} title="Top Up Sekarang" onPress={handleTopUp} />
         </View>
       </ScrollView>
     </ThemedView>

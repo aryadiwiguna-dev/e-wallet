@@ -5,7 +5,7 @@ export default function ServicesLayout() {
     <Stack
     screenOptions={{ 
       // headerShown:false,
-      title:"Test"
+      title:"Beli Pulsa"
      }}
     >
       <Stack.Screen name="pulsa" options={{ title: 'Beli Pulsa' }} />

@@ -68,13 +68,6 @@ export default function ProfileScreen() {
             right={() => <ThemedText>Rp {(balance || 0).toLocaleString('id-ID')}</ThemedText>} 
           />
           <List.Item
-            title="Pengaturan Tema" 
-            description="Ubah tampilan aplikasi"
-            titleStyle={{ color: theme.colors.text }}
-            descriptionStyle={{ color: theme.colors.textSecondary }}
-            left={(props) => <List.Icon {...props} icon="palette" color={theme.colors.primary} />}
-          />
-          <List.Item
             title="Bantuan"
             description="Pusat bantuan dan FAQ"
             titleStyle={{ color: theme.colors.text }}

@@ -118,7 +118,7 @@ export default function PulsaScreen() {
 
         {/* Tombol Beli */}
         <View style={dynamicStyles.buttonContainer}>
-          <CustomButton title="Beli Sekarang" onPress={handleBuy} />
+          <CustomButton title="Beli Sekarang" style={{ backgroundColor: theme.colors.primary }} onPress={handleBuy} />
         </View>
       </ScrollView>
     </ThemedView>

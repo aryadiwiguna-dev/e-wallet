@@ -12,14 +12,11 @@ export default function BalanceCard() {
   const router = useRouter();
 
    const handleWithdraw = () => {
-    // Untuk sementara, kita buat jumlah tetap. Nanti bisa dikembangkan dengan modal input.
     const amount = 50000; 
     if (balance < amount) {
       Alert.alert('Error', 'Saldo tidak mencukupi. Minimal Saldo Harus 50.000');
       return;
     }
-    // withdraw(amount);
-    // Alert.alert('Sukses', `Penarikan sebesar Rp ${amount.toLocaleString('id-ID')} berhasil!`);
 
     Alert.alert(
       'Konfirmasi Tarik Tunai',
@@ -27,14 +24,13 @@ export default function BalanceCard() {
       [
         {
           text: 'Batal',
-          style: 'cancel', // Style 'cancel' akan membuat tombol ini sedikit lebih menonjol
+          style: 'cancel', 
           onPress: () => console.log('Tarik tunai dibatalkan.'),
         },
         {
           text: 'Ya, Tarik',
-          style: 'destructive', // Style 'destructive' biasanya warna merah, cocok untuk aksi penting
+          style: 'destructive', 
           onPress: () => {
-            // 3. Jika pengguna menekan "Ya", maka eksekusi fungsi withdraw
             withdraw(amount);
             Alert.alert('Sukses', `Penarikan sebesar Rp ${amount.toLocaleString('id-ID')} berhasil!`);
           },

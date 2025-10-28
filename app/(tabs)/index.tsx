@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import React from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import BalanceCard from '../../components/BalanceCard';
 import ServiceGrid from '../../components/ServiceGrid';
 import { useCustomTheme } from '../../context/ThemeContext';
@@ -52,8 +52,8 @@ export default function HomeScreen() {
             recentTransactions.map((trx) => (
               <View key={trx.id} style={styles.recentTransactionItem}>
                 <View>
-                  <ThemedText>{trx.description}</ThemedText>
-                  <ThemedText style={{ fontSize: 12, color: theme.colors.textSecondary }}>
+                  <ThemedText>{trx.description}{" "}</ThemedText>
+                  <ThemedText style={{ fontSize: 12, color: theme.colors.text }}>
                     {trx.date.toLocaleDateString('id-ID')}
                   </ThemedText>
                 </View>

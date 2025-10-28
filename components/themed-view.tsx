@@ -1,4 +1,3 @@
-// components/themed-view.tsx
 import React, { ReactNode } from 'react';
 import { View, StyleSheet, ViewProps } from 'react-native';
 import { useCustomTheme } from '../context/ThemeContext';

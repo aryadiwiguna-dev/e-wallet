@@ -2,8 +2,6 @@ import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-
-// Import yang dibutuhkan
 import AppLoading from '@/components/AppLoading';
 import { CustomThemeProvider, useCustomTheme } from '../context/ThemeContext';
 
@@ -16,7 +14,7 @@ function AppContent() {
 
   return (
     <ThemeProvider value={navigationTheme as any}>
-      <Stack>
+      <Stack screenOptions={{ headerShown:false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>

@@ -1,8 +1,5 @@
-// constants/theme.ts
 import { TextStyle } from 'react-native';
 
-// === KONTRAK TEMA APLIKASI KITA ===
-// Ini adalah "janji" kita. Semua objek tema WAJIB memenuhi kontrak ini.
 export type AppTheme = {
   colors: {
     primary: string;
@@ -14,14 +11,14 @@ export type AppTheme = {
     success: string;
     error: string;
   };
-  // 2. Spasi
+ 
   spacing: {
     s: number;
     m: number;
     l: number;
     xl: number;
   };
-  // 3. Gaya Teks
+  
   textStyles: {
     header: TextStyle;
     body: TextStyle;
@@ -39,7 +36,7 @@ export type AppTheme = {
 
 export const lightTheme: AppTheme = {
   colors: {
-    primary: '#6200EE',
+    primary: '#0d0dd6ff',
     background: '#F5F5F5',
     card: '#FFFFFF',
     text: '#121212',
@@ -72,7 +69,7 @@ export const lightTheme: AppTheme = {
 export const darkTheme: AppTheme = {
   ...lightTheme, // Warisi semua properti dari lightTheme
   colors: {
-    ...lightTheme.colors, // Warisi warna, lalu timpa beberapa
+    ...lightTheme.colors, 
     primary: '#6272d1ff',
     background: '#121212',
     card: '#1E1E1E',

@@ -118,12 +118,12 @@ export const useWalletStore = create<WalletStore>()(
       onRehydrateStorage: () => (state) => {
         console.log('Hydrating store from AsyncStorage...');
         
-        // `state` adalah data yang baru saja dimuat dari storage
+        
         if (state) {
-          // Konversi kembali string date menjadi objek Date untuk setiap transaksi
+          
           state.transactions = state.transactions.map((trx) => ({
             ...trx,
-            date: new Date(trx.date), // Ini adalah langkah krusialnya
+            date: new Date(trx.date), 
           }));
         }
         

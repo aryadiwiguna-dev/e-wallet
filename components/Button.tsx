@@ -1,14 +1,12 @@
-// components/Button.tsx
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
-// Definisikan tipe untuk props komponen kita
 interface CustomButtonProps {
-  title: string; // Teks di dalam button
-  onPress: () => void; // Fungsi yang dipanggil saat button ditekan
-  variant?: 'primary' | 'secondary'; // Variasi style (opsional)
-  disabled?: boolean; // Apakah button dalam keadaan non-aktif (opsional)
-  style?: ViewStyle; // Style tambahan dari luar (opsional)
+  title: string; 
+  onPress: () => void; 
+  variant?: 'primary' | 'secondary';
+  disabled?: boolean; 
+  style?: ViewStyle; 
 }
 
 const CustomButton: React.FC<CustomButtonProps> = ({
@@ -18,18 +16,17 @@ const CustomButton: React.FC<CustomButtonProps> = ({
   disabled = false,
   style,
 }) => {
-  // Pilih style berdasarkan variant
   const buttonStyle = [
     styles.button,
     variant === 'primary' ? styles.primaryButton : styles.secondaryButton,
-    disabled && styles.disabledButton, // Tambahkan style jika disabled
-    style, // Gabungkan dengan style dari props
+    disabled && styles.disabledButton, 
+    style, 
   ];
 
   const textStyle = [
     styles.text,
     variant === 'primary' ? styles.primaryText : styles.secondaryText,
-    disabled && styles.disabledText, // Tambahkan style teks jika disabled
+    disabled && styles.disabledText, 
   ];
 
   return (
@@ -59,7 +56,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   primaryButton: {
-    backgroundColor: '#6200EE', // Warna utama (misalnya, ungu)
+    backgroundColor: '#6200EE',
   },
   secondaryButton: {
     backgroundColor: 'transparent',
