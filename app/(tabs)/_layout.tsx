@@ -3,16 +3,22 @@ import React from 'react';
 
 import { HapticTab } from '@/components/haptic-tab';
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useCustomTheme } from '../../context/ThemeContext';
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const { theme } = useCustomTheme();
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        
+        tabBarActiveTintColor: theme.colors.primary,
+        tabBarInactiveTintColor: theme.colors.textSecondary,
+        tabBarStyle: {
+          backgroundColor: theme.colors.card, // Warna latar tab bar
+          borderTopColor: theme.colors.border, // Warna garis atas tab bar
+        },
         headerShown: false,
         tabBarButton: HapticTab,
       }}>
@@ -20,16 +26,60 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          tabBarIcon: ({ color }) => {
+            return <MaterialIcons color={color} size={28} name="home" />;
+          }
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="transfer"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Transfer',
+          tabBarIcon: ({ color }) => {
+            return <MaterialIcons color={color} size={28} name="money" />;
+          }
+          
+          
         }}
       />
+      <Tabs.Screen
+        name="scan"
+        options={{
+          title: 'Scan',
+          tabBarIcon: ({ color }) => {
+             return <MaterialIcons color={color} size={28} name="qr-code-scanner" />;
+          }
+        }}
+      />
+      <Tabs.Screen
+        name="history"
+        options={{
+          title: 'History',
+          tabBarIcon: ({ color }) => {
+            return <MaterialIcons color={color} size={28} name="history" />;
+          }
+        }}
+      />
+
+      <Tabs.Screen
+        name="topup"
+        options={{
+          title: 'Top Up',
+          tabBarIcon: ({ color }) => {
+            return <MaterialIcons color={color} size={28} name="arrow-upward" />;
+          }
+        }}
+      />
+        <Tabs.Screen
+          name="profile"
+          options={{
+            title: 'Profile',
+            tabBarIcon: ({ color }) => {
+              return <MaterialIcons color={color} size={28} name="person" />;
+            }
+          }}
+        />
     </Tabs>
+    
   );
 }

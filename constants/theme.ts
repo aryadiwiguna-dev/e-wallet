@@ -1,53 +1,86 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
+// constants/theme.ts
+import { TextStyle } from 'react-native';
 
-import { Platform } from 'react-native';
+// === KONTRAK TEMA APLIKASI KITA ===
+// Ini adalah "janji" kita. Semua objek tema WAJIB memenuhi kontrak ini.
+export type AppTheme = {
+  colors: {
+    primary: string;
+    background: string;
+    card: string;
+    text: string;
+    textSecondary: string;
+    border: string;
+    success: string;
+    error: string;
+  };
+  // 2. Spasi
+  spacing: {
+    s: number;
+    m: number;
+    l: number;
+    xl: number;
+  };
+  // 3. Gaya Teks
+  textStyles: {
+    header: TextStyle;
+    body: TextStyle;
+    caption: TextStyle;
+  };
+  
+  fonts: {
+    regular: { fontFamily: string; fontWeight: string };
+    medium: { fontFamily: string; fontWeight: string };
+    bold: { fontFamily: string; fontWeight: string };
+    heavy: { fontFamily: string; fontWeight: string };
+  };
+};
 
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
 
-export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
-    icon: '#687076',
-    tabIconDefault: '#687076',
-    tabIconSelected: tintColorLight,
+export const lightTheme: AppTheme = {
+  colors: {
+    primary: '#6200EE',
+    background: '#F5F5F5',
+    card: '#FFFFFF',
+    text: '#121212',
+    textSecondary: '#757575',
+    border: '#E0E0E0',
+    success: '#4CAF50',
+    error: '#F44336',
   },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
-    icon: '#9BA1A6',
-    tabIconDefault: '#9BA1A6',
-    tabIconSelected: tintColorDark,
+  spacing: {
+    s: 8,
+    m: 16,
+    l: 24,
+    xl: 32,
+  },
+  textStyles: {
+    header: { fontSize: 32, fontWeight: 'bold' },
+    body: { fontSize: 16 },
+    caption: { fontSize: 14, color: '#757575' },
+  },
+  
+  fonts: {
+    regular: { fontFamily: 'System', fontWeight: '400' },
+    medium: { fontFamily: 'System', fontWeight: '500' },
+    bold: { fontFamily: 'System', fontWeight: 'bold' },
+    heavy: { fontFamily: 'System', fontWeight: '900' },
   },
 };
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
+
+export const darkTheme: AppTheme = {
+  ...lightTheme, // Warisi semua properti dari lightTheme
+  colors: {
+    ...lightTheme.colors, // Warisi warna, lalu timpa beberapa
+    primary: '#6272d1ff',
+    background: '#121212',
+    card: '#1E1E1E',
+    text: '#E1E1E1',
+    textSecondary: '#A0A0A0',
+    border: '#333333',
+    success: '#66BB6A',
+    error: '#EF5350',
   },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: "system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    serif: "Georgia, 'Times New Roman', serif",
-    rounded: "'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif",
-    mono: "SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
-  },
-});
+  
+};

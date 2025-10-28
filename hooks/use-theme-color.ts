@@ -3,19 +3,18 @@
  * https://docs.expo.dev/guides/color-schemes/
  */
 
-import { Colors } from '@/constants/theme';
+// import { Colors } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { lightTheme, darkTheme, AppTheme } from '../constants/theme';
 
-export function useThemeColor(
-  props: { light?: string; dark?: string },
-  colorName: keyof typeof Colors.light & keyof typeof Colors.dark
-) {
-  const theme = useColorScheme() ?? 'light';
-  const colorFromProps = props[theme];
+export const useTheme = (): AppTheme => {
+  // useColorScheme akan mengembalikan 'light', 'dark', atau null
+  const colorScheme = useColorScheme();
 
-  if (colorFromProps) {
-    return colorFromProps;
-  } else {
-    return Colors[theme][colorName];
+  // Jika tema perangkat adalah 'dark', gunakan darkTheme, selain itu gunakan lightTheme
+  if (colorScheme === 'dark') {
+    return darkTheme;
   }
-}
+
+  return lightTheme;
+};

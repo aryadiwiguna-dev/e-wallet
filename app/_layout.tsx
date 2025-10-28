@@ -1,24 +1,35 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import React from 'react';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+// Import yang dibutuhkan
+import AppLoading from '@/components/AppLoading';
+import { CustomThemeProvider, useCustomTheme } from '../context/ThemeContext';
 
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+function AppContent() {
+  const { hasHydrated, navigationTheme } = useCustomTheme();
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+  if (!hasHydrated) {
+    return <AppLoading />;
+  }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={navigationTheme as any}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
+  );
+}
+
+
+export default function RootLayout() {
+  return (
+    <CustomThemeProvider>
+      <AppContent />
+    </CustomThemeProvider>
   );
 }
