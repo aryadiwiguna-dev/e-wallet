@@ -7,6 +7,9 @@ Aplikasi Diantaraku-dana merupakan dompet digital modern yang dibangun dengan Re
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Zustand](https://img.shields.io/badge/Zustand-FF6B00?style=for-the-badge&logo=redux&logoColor=white)](https://zustand-demo.pmnd.rs/)
 
+# 📸 LOOM
+https://www.loom.com/share/4a5e4a338bb2454186a9c5f5226d21e1
+
 # 📸 Demo Aplikasi
 
 <div align="center">
