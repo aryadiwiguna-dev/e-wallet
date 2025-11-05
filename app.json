@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "e-wallet-project",
-    "slug": "e-wallet-project",
+    "name": "diantara ku dana",
+    "slug": "diantaraku-dana",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/icon-2.jpeg",
     "scheme": "ewalletproject",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -19,7 +19,11 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA"
+      ],
+      "package": "com.aryadiwiguna.ewalletproject"
     },
     "web": {
       "output": "static",
@@ -38,12 +42,17 @@
             "backgroundColor": "#000000"
           }
         }
-      ],
-      "expo-barcode-scanner"
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "6605bd49-6945-4794-b698-ebc7587aa2ef"
+      }
     }
   }
 }

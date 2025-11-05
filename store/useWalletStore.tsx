@@ -28,7 +28,6 @@ export const useWalletStore = create<WalletStore>()(
     (set, get) => ({
       balance: 100000,
       transactions: [
-        // Data contoh
         { id: '1', type: 'TOPUP', amount: 50000, description: 'Top Up Saldo Awal', date: new Date() },
       ],
 
@@ -112,8 +111,8 @@ export const useWalletStore = create<WalletStore>()(
       },
     }),
     {
-      name: 'wallet-storage', // Nama kunci untuk penyimpanan di AsyncStorage
-      storage: createJSONStorage(() => AsyncStorage), // Gunakan AsyncStorage
+      name: 'wallet-storage', // AsyncStorage
+      storage: createJSONStorage(() => AsyncStorage), //  AsyncStorage
 
       onRehydrateStorage: () => (state) => {
         console.log('Hydrating store from AsyncStorage...');
