@@ -10,7 +10,7 @@ import { useWalletStore } from '@/store/useWalletStore';
 
 export default function ProfileScreen() {
   const { theme } = useCustomTheme();
-  const { user } = useUserStore();
+  const { profile } = useUserStore();
   const { balance } = useWalletStore();
 
   const dynamicStyles = StyleSheet.create({
@@ -50,11 +50,11 @@ export default function ProfileScreen() {
       <View style={dynamicStyles.header}>
         <Avatar.Text
           size={80}
-          label={user ? user.name.charAt(0).toUpperCase() : 'U'}
+          label={profile ? profile.name.charAt(0).toUpperCase() : 'U'}
           style={dynamicStyles.avatar}
         />
-        <ThemedText style={dynamicStyles.userName}>{user?.name}</ThemedText>
-        <ThemedText style={dynamicStyles.userEmail}>{user?.email}</ThemedText>
+        <ThemedText style={dynamicStyles.userName}>{profile?.name}</ThemedText>
+        <ThemedText style={dynamicStyles.userEmail}>{profile?.email}</ThemedText>
       </View>
 
       <View style={dynamicStyles.listSection}>

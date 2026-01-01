@@ -11,7 +11,7 @@ export type AppTheme = {
     success: string;
     error: string;
   };
- 
+  
   spacing: {
     s: number;
     m: number;
@@ -30,9 +30,15 @@ export type AppTheme = {
     medium: { fontFamily: string; fontWeight: string };
     bold: { fontFamily: string; fontWeight: string };
     heavy: { fontFamily: string; fontWeight: string };
+    // Tambahkan varian MD3 untuk React Native Paper
+    bodySmall: { fontFamily: string; fontWeight: string };
+    bodyMedium: { fontFamily: string; fontWeight: string };
+    bodyLarge: { fontFamily: string; fontWeight: string };
+    labelSmall: { fontFamily: string; fontWeight: string };
+    labelMedium: { fontFamily: string; fontWeight: string };
+    labelLarge: { fontFamily: string; fontWeight: string };
   };
 };
-
 
 export const lightTheme: AppTheme = {
   colors: {
@@ -58,16 +64,24 @@ export const lightTheme: AppTheme = {
   },
   
   fonts: {
+    // Varian Custom kamu
     regular: { fontFamily: 'System', fontWeight: '400' },
     medium: { fontFamily: 'System', fontWeight: '500' },
     bold: { fontFamily: 'System', fontWeight: 'bold' },
     heavy: { fontFamily: 'System', fontWeight: '900' },
+    
+    // Penyesuaian MD3 (Mapping ke varian yang kamu punya)
+    bodySmall: { fontFamily: 'System', fontWeight: '400' },
+    bodyMedium: { fontFamily: 'System', fontWeight: '400' },
+    bodyLarge: { fontFamily: 'System', fontWeight: '400' },
+    labelSmall: { fontFamily: 'System', fontWeight: '500' },
+    labelMedium: { fontFamily: 'System', fontWeight: '500' },
+    labelLarge: { fontFamily: 'System', fontWeight: '500' },
   },
 };
 
-
 export const darkTheme: AppTheme = {
-  ...lightTheme, // Warisi semua properti dari lightTheme
+  ...lightTheme, 
   colors: {
     ...lightTheme.colors, 
     primary: '#6272d1ff',
@@ -79,5 +93,5 @@ export const darkTheme: AppTheme = {
     success: '#66BB6A',
     error: '#EF5350',
   },
-  
+  // Font diwarisi dari lightTheme, jadi otomatis sudah punya bodySmall dll.
 };

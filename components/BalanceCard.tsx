@@ -1,6 +1,7 @@
-import React from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import React, { useState } from 'react';
+import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { Card, Button } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; // Import ikon
 import { ThemedText } from '@/components/themed-text';
 import { useCustomTheme } from '../context/ThemeContext';
 import { useWalletStore } from '../store/useWalletStore';
@@ -11,7 +12,10 @@ export default function BalanceCard() {
   const { balance, withdraw } = useWalletStore();
   const router = useRouter();
 
-   const handleWithdraw = () => {
+  // State untuk kontrol visibilitas saldo
+  const [isVisible, setIsVisible] = useState(true);
+
+  const handleWithdraw = () => {
     const amount = 50000; 
     if (balance < amount) {
       Alert.alert('Error', 'Saldo tidak mencukupi. Minimal Saldo Harus 50.000');
@@ -25,7 +29,6 @@ export default function BalanceCard() {
         {
           text: 'Batal',
           style: 'cancel', 
-          onPress: () => console.log('Tarik tunai dibatalkan.'),
         },
         {
           text: 'Ya, Tarik',
@@ -37,27 +40,32 @@ export default function BalanceCard() {
         },
       ]
     );
-
-
   };
 
-   const handleTopUp = () => {
+  const handleTopUp = () => {
     router.push('/(tabs)/topup');
   };
 
   const styles = StyleSheet.create({
     card: {
-      marginTop: 50,
       backgroundColor: theme.colors.primary,
       marginHorizontal: theme.spacing.m,
       borderRadius: 16,
+      elevation: 4,
     },
     content: {
       paddingVertical: theme.spacing.l,
     },
+    labelRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
     balanceLabel: {
       color: 'rgba(255, 255, 255, 0.8)',
       fontSize: 14,
+    },
+    eyeIcon: {
+      marginLeft: 8,
     },
     balanceAmount: {
       color: 'white',
@@ -70,20 +78,56 @@ export default function BalanceCard() {
       marginTop: theme.spacing.m,
       gap: theme.spacing.m,
     },
+    outlineButton: {
+      borderColor: 'rgba(255, 255, 255, 0.5)',
+      borderRadius: 20,
+      flex: 1,
+    }
   });
 
   return (
     <Card style={styles.card}>
       <Card.Content style={styles.content}>
-        <ThemedText style={styles.balanceLabel}>Saldo Anda</ThemedText>
+        {/* Baris Label + Tombol Mata */}
+        <View style={styles.labelRow}>
+          <ThemedText style={styles.balanceLabel}>Saldo Anda</ThemedText>
+          <TouchableOpacity 
+            onPress={() => setIsVisible(!isVisible)}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          >
+            <MaterialCommunityIcons 
+              name={isVisible ? 'eye-outline' : 'eye-off-outline'} 
+              size={18} 
+              color="rgba(255, 255, 255, 0.8)" 
+              style={styles.eyeIcon}
+            />
+          </TouchableOpacity>
+        </View>
+
+        {/* Logika Tampilan Saldo */}
         <ThemedText style={styles.balanceAmount}>
-          Rp {balance.toLocaleString('id-ID')}
+          {isVisible 
+            ? `Rp ${balance.toLocaleString('id-ID')}` 
+            : 'Rp ••••••••'}
         </ThemedText>
+
         <View style={styles.buttonContainer}>
-          <Button mode="outlined" textColor="white" style={{ borderColor: 'white' }} onPress={handleTopUp}>
+          <Button 
+            mode="outlined" 
+            textColor="white" 
+            style={styles.outlineButton} 
+            onPress={handleTopUp}
+            labelStyle={{ fontSize: 13 }}
+          >
             Top Up
           </Button>
-          <Button mode="outlined" textColor="white" style={{ borderColor: 'white' }} onPress={handleWithdraw}>
+          <Button 
+            mode="outlined" 
+            textColor="white" 
+            style={styles.outlineButton} 
+            onPress={handleWithdraw}
+            labelStyle={{ fontSize: 13 }}
+          >
             Tarik Tunai
           </Button>
         </View>

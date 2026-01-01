@@ -1,8 +1,9 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, TextInput, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, TextInput, View, ActivityIndicator } from 'react-native';
 import { RadioButton } from 'react-native-paper';
+import { useRouter } from 'expo-router'; // Tambahkan router
 import CustomButton from '../../components/Button';
 import { useCustomTheme } from '../../context/ThemeContext';
 import { TopUpItem, useTopUpStore } from '../../store/useTopUpStore';
@@ -11,21 +12,21 @@ import { useWalletStore } from '../../store/useWalletStore';
 export default function TopUpScreen() {
   const { theme } = useCustomTheme();
   const { items } = useTopUpStore();
-  const { topUp } = useWalletStore();
+  const { topUp, isLoading } = useWalletStore(); // Ambil isLoading dari store
+  const router = useRouter();
 
   const [selectedItem, setSelectedItem] = useState<TopUpItem | null>(null);
   const [customAmount, setCustomAmount] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false); // Loading lokal untuk UI tombol
 
-  const handleTopUp = () => {
-    let finalAmount = selectedItem?.amount || 0;
+  const handleTopUp = async () => {
+    let finalAmount = 0;
     
     const trimmed = customAmount.trim();
-    const hasCustom = trimmed !== '';
-
-    if (hasCustom) {
+    if (trimmed !== '') {
       const parsed = Number(trimmed);
       if (isNaN(parsed) || parsed <= 0) {
-        Alert.alert('Error', 'Pilih nominal atau masukkan jumlah yang valid.');
+        Alert.alert('Error', 'Masukkan nominal yang valid.');
         return;
       }
       finalAmount = parsed;
@@ -43,12 +44,26 @@ export default function TopUpScreen() {
         { text: 'Batal', style: 'cancel' },
         {
           text: 'Top Up',
-          onPress: () => {
-            // Proses top up
-            topUp(finalAmount);
-            Alert.alert('Sukses', 'Top Up berhasil!');
-            setSelectedItem(null);
-            setCustomAmount('');
+          onPress: async () => {
+            try {
+              setIsSubmitting(true);
+              // Panggil fungsi topUp dari store (Async)
+              await topUp(finalAmount);
+              
+              Alert.alert('Sukses', 'Top Up berhasil!', [
+                { 
+                  text: 'OK', 
+                  onPress: () => router.back() // Kembali ke Home setelah sukses
+                }
+              ]);
+              
+              setSelectedItem(null);
+              setCustomAmount('');
+            } catch (error) {
+              Alert.alert('Error', 'Gagal memproses Top Up. Silakan coba lagi.');
+            } finally {
+              setIsSubmitting(false);
+            }
           },
         },
       ]
@@ -59,7 +74,7 @@ export default function TopUpScreen() {
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
-      marginTop: 50,
+      paddingTop: 50, // Lebih aman daripada marginTop
     },
     title: {
       fontSize: 24,
@@ -74,8 +89,8 @@ export default function TopUpScreen() {
       marginHorizontal: theme.spacing.m,
       borderRadius: 8,
       backgroundColor: theme.colors.card,
-      borderBottomWidth: 1,
-      borderBottomColor: theme.colors.border,
+      borderWidth: 1,
+      borderColor: theme.colors.border,
     },
     input: {
       height: 50,
@@ -95,15 +110,17 @@ export default function TopUpScreen() {
       marginHorizontal: theme.spacing.m,
       marginTop: theme.spacing.m,
       borderRadius: 8,
+      overflow: 'hidden', // Agar riak seleksi tidak keluar border radius
     },
     buttonContainer: {
       padding: theme.spacing.m,
+      marginTop: theme.spacing.m,
     },
   });
 
   return (
     <ThemedView style={dynamicStyles.container}>
-      <ScrollView>
+      <ScrollView keyboardShouldPersistTaps="handled">
         <ThemedText style={dynamicStyles.title}>Pilih Nominal Top Up</ThemedText>
 
         <View style={dynamicStyles.inputContainer}>
@@ -112,7 +129,10 @@ export default function TopUpScreen() {
             placeholder="Masukkan nominal lainnya"
             placeholderTextColor={theme.colors.textSecondary}
             value={customAmount}
-            onChangeText={setCustomAmount}
+            onChangeText={(text) => {
+              setCustomAmount(text);
+              setSelectedItem(null); // Reset radio button jika ngetik manual
+            }}
             keyboardType="numeric"
           />
         </View>
@@ -139,7 +159,15 @@ export default function TopUpScreen() {
         </View>
 
         <View style={dynamicStyles.buttonContainer}>
-          <CustomButton style={{ backgroundColor: theme.colors.primary }} title="Top Up Sekarang" onPress={handleTopUp} />
+          {isSubmitting || isLoading ? (
+            <ActivityIndicator size="large" color={theme.colors.primary} />
+          ) : (
+            <CustomButton 
+              style={{ backgroundColor: theme.colors.primary }} 
+              title="Top Up Sekarang" 
+              onPress={handleTopUp} 
+            />
+          )}
         </View>
       </ScrollView>
     </ThemedView>

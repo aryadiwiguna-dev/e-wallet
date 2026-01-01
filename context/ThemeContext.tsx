@@ -3,13 +3,15 @@ import { useColorScheme } from 'react-native';
 import { lightTheme, darkTheme, AppTheme } from '../constants/theme';
 import { DefaultTheme } from '@react-navigation/native';
 import { NavigationTheme } from 'react-native-paper/lib/typescript/types';
-import { useWalletStore } from '../store/useWalletStore';
+// Hapus import useWalletStore jika tidak digunakan lagi di sini
 
 type ThemeContextType = {
-  theme: AppTheme; // Tema lengkap untuk UI komponen
-  navigationTheme: NavigationTheme; // Tema khusus untuk navigator
+  theme: AppTheme;
+  navigationTheme: NavigationTheme;
   isDark: boolean;
-  hasHydrated: boolean
+  // Kita tetap simpan properti ini di type agar tidak merusak file lain, 
+  // tapi default-nya selalu true karena kita tidak pakai persist lagi
+  hasHydrated: boolean; 
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -37,10 +39,12 @@ const createNavigationTheme = (appTheme: AppTheme, isDark: boolean): NavigationT
 export const CustomThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === 'dark';
-  const theme = isDark ? darkTheme : lightTheme; // Pilih AppTheme yang aktif
-  const navigationTheme = createNavigationTheme(theme, isDark); // Buat NavigationTheme darinya
+  const theme = isDark ? darkTheme : lightTheme;
+  const navigationTheme = createNavigationTheme(theme, isDark);
 
-  const hasHydrated = useWalletStore.persist.hasHydrated();
+  // PERBAIKAN: Karena tidak pakai persist, kita set true saja 
+  // atau hapus jika di file lain tidak mengecek ini.
+  const hasHydrated = true; 
 
   return (
     <ThemeContext.Provider value={{ theme, navigationTheme, isDark, hasHydrated }}>
