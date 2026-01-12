@@ -3,7 +3,7 @@ import { ThemedView } from '@/components/themed-view';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, TextInput, View, ActivityIndicator } from 'react-native';
 import { RadioButton } from 'react-native-paper';
-import { useRouter } from 'expo-router'; // Tambahkan router
+import { useRouter } from 'expo-router'; 
 import CustomButton from '../../components/Button';
 import { useCustomTheme } from '../../context/ThemeContext';
 import { TopUpItem, useTopUpStore } from '../../store/useTopUpStore';
@@ -12,12 +12,12 @@ import { useWalletStore } from '../../store/useWalletStore';
 export default function TopUpScreen() {
   const { theme } = useCustomTheme();
   const { items } = useTopUpStore();
-  const { topUp, isLoading } = useWalletStore(); // Ambil isLoading dari store
+  const { topUp, isLoading } = useWalletStore(); 
   const router = useRouter();
 
   const [selectedItem, setSelectedItem] = useState<TopUpItem | null>(null);
   const [customAmount, setCustomAmount] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false); // Loading lokal untuk UI tombol
+  const [isSubmitting, setIsSubmitting] = useState(false); 
 
   const handleTopUp = async () => {
     let finalAmount = 0;
@@ -47,13 +47,13 @@ export default function TopUpScreen() {
           onPress: async () => {
             try {
               setIsSubmitting(true);
-              // Panggil fungsi topUp dari store (Async)
+              
               await topUp(finalAmount);
               
               Alert.alert('Sukses', 'Top Up berhasil!', [
                 { 
                   text: 'OK', 
-                  onPress: () => router.back() // Kembali ke Home setelah sukses
+                  onPress: () => router.back() 
                 }
               ]);
               
@@ -74,7 +74,7 @@ export default function TopUpScreen() {
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
-      paddingTop: 50, // Lebih aman daripada marginTop
+      paddingTop: 50, 
     },
     title: {
       fontSize: 24,
@@ -110,7 +110,7 @@ export default function TopUpScreen() {
       marginHorizontal: theme.spacing.m,
       marginTop: theme.spacing.m,
       borderRadius: 8,
-      overflow: 'hidden', // Agar riak seleksi tidak keluar border radius
+      overflow: 'hidden', 
     },
     buttonContainer: {
       padding: theme.spacing.m,
@@ -131,7 +131,7 @@ export default function TopUpScreen() {
             value={customAmount}
             onChangeText={(text) => {
               setCustomAmount(text);
-              setSelectedItem(null); // Reset radio button jika ngetik manual
+              setSelectedItem(null); 
             }}
             keyboardType="numeric"
           />

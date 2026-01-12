@@ -1,8 +1,8 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
-import { ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; // Tambahkan ikon
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import BalanceCard from '../../components/BalanceCard';
 import ServiceGrid from '../../components/ServiceGrid';
 import { useCustomTheme } from '../../context/ThemeContext';
@@ -10,10 +10,28 @@ import { useWalletStore } from '../../store/useWalletStore';
 
 export default function HomeScreen() {
   const { theme } = useCustomTheme();
-  const { transactions, fetchWalletData, isLoading } = useWalletStore();
+  
+  
+  const { 
+    transactions, 
+    fetchWalletData, 
+    subscribeToWallet, 
+    isLoading 
+  } = useWalletStore();
 
   useEffect(() => {
+    
     fetchWalletData();
+
+
+    const unsubscribe = subscribeToWallet();
+
+
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
   }, []);
 
   const styles = StyleSheet.create({
@@ -25,7 +43,7 @@ export default function HomeScreen() {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      paddingHorizontal: theme.spacing.m, // Padding agar sejajar dengan BalanceCard
+      paddingHorizontal: theme.spacing.m, 
       marginTop: 25,
       marginBottom: theme.spacing.m,
     },
@@ -37,13 +55,14 @@ export default function HomeScreen() {
     listContainer: {
       backgroundColor: theme.colors.card,
       marginHorizontal: theme.spacing.m,
-      borderRadius: 12, // Border radius lebih lembut
+      borderRadius: 12, 
       overflow: 'hidden',
-      elevation: 2, // Tambahkan sedikit shadow untuk Android
-      shadowColor: '#000', // Shadow untuk iOS
+      elevation: 2, 
+      shadowColor: '#000', 
       shadowOffset: { width: 0, height: 2 },
       shadowOpacity: 0.1,
       shadowRadius: 4,
+      marginBottom: 20,
     },
     recentTransactionItem: {
       flexDirection: 'row',
@@ -64,13 +83,14 @@ export default function HomeScreen() {
     },
   });
 
-  const recentTransactions = transactions.slice(0, 3);
+ 
+  const recentTransactions = transactions.slice(0, 5);
 
-  // Fungsi pembantu untuk menentukan ikon berdasarkan tipe transaksi
-  const getTransactionIcon = (type: string, amount: number) => {
-    if (amount > 0) return 'arrow-bottom-left'; // Uang masuk
-    if (type.includes('Transfer')) return 'send'; 
-    return 'cart-outline'; // Belanja/Layanan
+  const getTransactionIcon = (description: string, amount: number) => {
+    if (amount > 0) return 'arrow-bottom-left'; 
+    if (description.includes('Transfer')) return 'send'; 
+    if (description.includes('Top Up')) return 'wallet-plus';
+    return 'cart-outline'; 
   };
 
   return (
@@ -97,7 +117,9 @@ export default function HomeScreen() {
 
         <View style={styles.sectionHeader}>
           <ThemedText style={styles.sectionTitle}>Transaksi Terkini</ThemedText>
-          <ThemedText style={{ color: theme.colors.primary, fontSize: 14 }}>Lihat Semua</ThemedText>
+          <ThemedText style={{ color: theme.colors.primary, fontSize: 14, fontWeight: '600' }}>
+            Lihat Semua
+          </ThemedText>
         </View>
 
         <View style={styles.listContainer}>
@@ -108,7 +130,6 @@ export default function HomeScreen() {
               
               return (
                 <View key={trx.id} style={styles.recentTransactionItem}>
-                  {/* Ikon Visual sesuai saran */}
                   <View style={styles.iconContainer}>
                     <MaterialCommunityIcons 
                       name={getTransactionIcon(trx.description, trx.amount)} 
@@ -119,10 +140,10 @@ export default function HomeScreen() {
 
                   <View style={{ flex: 1 }}>
                     <ThemedText style={{ fontWeight: '600', fontSize: 15 }} numberOfLines={1}>
-                      {trx.description.replace('Saldo sebesar ', '')} {/* Pembersihan teks deskripsi agar ringkas */}
+                      {trx.description.replace('Saldo sebesar ', '')}
                     </ThemedText>
                     <ThemedText style={{ fontSize: 12, color: theme.colors.textSecondary, marginTop: 2 }}>
-                      {trxDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} • {trxDate.getHours()}:{trxDate.getMinutes().toString().padStart(2, '0')}
+                      {trxDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })} • {trxDate.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}
                     </ThemedText>
                   </View>
                   
@@ -137,9 +158,12 @@ export default function HomeScreen() {
               );
             })
           ) : (
-            <ThemedText style={{ textAlign: 'center', padding: theme.spacing.xl, color: theme.colors.textSecondary }}>
-              {isLoading ? "Memuat data..." : "Belum ada transaksi."}
-            </ThemedText>
+            <View style={{ padding: 40, alignItems: 'center' }}>
+               <MaterialCommunityIcons name="history" size={48} color={theme.colors.border} />
+               <ThemedText style={{ textAlign: 'center', marginTop: 10, color: theme.colors.textSecondary }}>
+                {isLoading ? "Memuat data..." : "Belum ada transaksi."}
+              </ThemedText>
+            </View>
           )}
         </View>
         

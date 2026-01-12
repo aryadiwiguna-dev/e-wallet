@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '../lib/supabase';
 
-// 1. Definisikan tipe data Profile
 export interface UserProfile {
   id: string;
   name: string;
@@ -9,11 +8,11 @@ export interface UserProfile {
   avatarUrl?: string;
 }
 
-// 2. Definisikan Interface Store
+
 interface UserStore {
   profile: UserProfile | null;
   isLoading: boolean;
-  fetchProfile: () => Promise<void>; // Fungsi ini yang tadinya error "not exist"
+  fetchProfile: () => Promise<void>; 
   clearProfile: () => void;
 }
 

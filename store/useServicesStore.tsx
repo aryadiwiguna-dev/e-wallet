@@ -12,7 +12,7 @@ type ServiceIconName =
   | 'shield-checkmark' 
   | 'ellipsis-horizontal';
 
-// Tipe data untuk setiap layanan
+
 export interface Service {
   id: string;
   name: string;

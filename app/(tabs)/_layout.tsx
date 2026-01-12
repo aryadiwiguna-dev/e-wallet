@@ -16,8 +16,8 @@ export default function TabLayout() {
         tabBarActiveTintColor: theme.colors.primary,
         tabBarInactiveTintColor: theme.colors.textSecondary,
         tabBarStyle: {
-          backgroundColor: theme.colors.card, // Warna latar tab bar
-          borderTopColor: theme.colors.border, // Warna garis atas tab bar
+          backgroundColor: theme.colors.card, 
+          borderTopColor: theme.colors.border, 
         },
         headerShown: false,
         tabBarButton: HapticTab,
@@ -40,15 +40,6 @@ export default function TabLayout() {
           }
           
           
-        }}
-      />
-      <Tabs.Screen
-        name="scan"
-        options={{
-          title: 'Scan',
-          tabBarIcon: ({ color }) => {
-             return <MaterialIcons color={color} size={28} name="qr-code-scanner" />;
-          }
         }}
       />
       <Tabs.Screen

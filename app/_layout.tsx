@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
 import { Stack, useRouter, useSegments } from 'expo-router';
-import { MD3LightTheme, MD3DarkTheme, PaperProvider } from 'react-native-paper'; // Tambahkan MD3 themes
+import { MD3LightTheme, MD3DarkTheme, PaperProvider } from 'react-native-paper'; 
 import { CustomThemeProvider, useCustomTheme } from '../context/ThemeContext';
 import { useAuthStore } from '../store/useAuthStore';
 import { useUserStore } from '../store/useUserStore';
 import { supabase } from '../lib/supabase';
+import * as Linking from 'expo-linking';
 
-// Komponen internal untuk menangani logika Auth dan Navigasi
 function AuthGuard() {
   const { session, setSession, isLoading } = useAuthStore();
   const { fetchProfile } = useUserStore();
@@ -14,13 +14,48 @@ function AuthGuard() {
   const router = useRouter();
 
   useEffect(() => {
-    // Cek session awal
+    const handleDeepLink = (url: string | null) => {
+      if (!url) return;
+      
+      const parsed = Linking.parse(url);
+      const { path, queryParams } = parsed;
+      
+      // Tunggu hingga loading selesai dan session dipastikan ada
+      if (session && !isLoading) {
+        if (path === 'transfer' && queryParams) {
+          router.push({
+            pathname: '/(tabs)/transfer',
+            params: { 
+              to: queryParams.to, 
+              amount: queryParams.amount 
+            }
+          });
+        } else if (path) {
+          router.push(`/${path}` as any);
+        }
+      }
+    };
+
+    const subscription = Linking.addEventListener('url', (event) => {
+      handleDeepLink(event.url);
+    });
+
+    // Jalankan pengecekan URL awal hanya jika data sudah siap
+    if (!isLoading && session) {
+      Linking.getInitialURL().then((url) => {
+        handleDeepLink(url);
+      });
+    }
+
+    return () => subscription.remove();
+  }, [session, isLoading]); // Menambahkan isLoading sebagai dependency
+
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) fetchProfile();
     });
 
-    // Pantau perubahan auth
     const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (session) fetchProfile();
@@ -37,7 +72,6 @@ function AuthGuard() {
 
     const inAuthGroup = segments[0] === '(tabs)';
 
-    // Logika redirect sederhana
     if (!session && inAuthGroup) {
       router.replace('/login');
     } else if (session && segments[0] === 'login') {
@@ -53,7 +87,6 @@ function AuthGuard() {
   );
 }
 
-// Komponen Root Utama
 export default function RootLayout() {
   return (
     <CustomThemeProvider>
@@ -62,25 +95,22 @@ export default function RootLayout() {
   );
 }
 
-// Kita buat satu level lagi agar bisa menggunakan hook 'useCustomTheme'
 function InnerLayout() {
   const { theme, isDark } = useCustomTheme();
 
-  // SOLUSI ERROR: Gabungkan tema dasar MD3 Paper dengan tema kustom kamu
   const basePaperTheme = isDark ? MD3DarkTheme : MD3LightTheme;
 
   const paperTheme = {
-    ...basePaperTheme, // Ini memastikan varian bodySmall, bodyMedium, dll ada
+    ...basePaperTheme, 
     colors: {
       ...basePaperTheme.colors,
-      ...theme.colors, // Overwrite dengan warna kustom kamu
+      ...theme.colors, 
       primary: theme.colors.primary,
       background: theme.colors.background,
       surface: theme.colors.card,
     },
-    // Tetap gunakan font kustom kamu untuk varian standar
     fonts: {
-      ...basePaperTheme.fonts, // Ambil semua varian default MD3
+      ...basePaperTheme.fonts, 
       regular: theme.fonts.regular,
       medium: theme.fonts.medium,
       bold: theme.fonts.bold,

@@ -1,29 +1,17 @@
 import { create } from 'zustand';
-import { supabase, Database } from '../lib/supabase';
-
-// 1. KITA EXPORT INTERFACE INI AGAR BISA DIPAKAI DI HISTORY.TSX
-export interface Transaction {
-  id: string;
-  user_id: string;
-  type: 'TOPUP' | 'WITHDRAW' | 'TRANSFER_IN' | 'TRANSFER_OUT' | 'PAYMENT';
-  amount: number;
-  description: string;
-  recipient_id?: string | null;
-  created_at: string;
-}
-
-// Helper untuk tipe Insert agar kode lebih bersih
-type TransactionInsert = Database['public']['Tables']['transactions']['Insert'];
+import { supabase, Transaction } from '../lib/supabase';
 
 interface WalletState {
   balance: number;
   transactions: Transaction[];
   isLoading: boolean;
   fetchWalletData: () => Promise<void>;
+  subscribeToWallet: () => () => void;
   topUp: (amount: number) => Promise<void>;
   withdraw: (amount: number) => Promise<void>;
   payWithQR: (amount: number, merchantName: string) => Promise<void>;
-  getFilteredTransactions: (filter?: string) => Transaction[];
+  transfer: (recipientId: string, amount: number, recipientName: string) => Promise<void>;
+
 }
 
 export const useWalletStore = create<WalletState>((set, get) => ({
@@ -31,121 +19,150 @@ export const useWalletStore = create<WalletState>((set, get) => ({
   transactions: [],
   isLoading: false,
 
+  // Mengambil data saldo dan riwayat transaksi
   fetchWalletData: async () => {
-    set({ isLoading: true });
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
 
-      const { data, error } = await supabase
-        .from('transactions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+      if (get().transactions.length === 0) set({ isLoading: true });
 
-      if (error) throw error;
+      const [walletRes, txRes] = await Promise.all([
+        supabase
+          .from('wallets' as any)
+          .select('balance')
+          .eq('user_id', session.user.id)
+          .maybeSingle() as any,
+        supabase
+          .from('transactions' as any)
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false }) as any
+      ]);
 
-      if (data) {
-        // Casting ke Transaction yang sudah kita export di atas
-        const txs = data as Transaction[];
-        
-        const totalBalance = txs.reduce((acc, curr) => {
-          return acc + Number(curr.amount);
-        }, 0);
+      if (walletRes.error) throw walletRes.error;
+      if (txRes.error) throw txRes.error;
 
-        set({ transactions: txs, balance: totalBalance });
-      }
+      set({ 
+        balance: Number(walletRes.data?.balance || 0), 
+        transactions: (txRes.data as Transaction[]) || [] 
+      });
     } catch (error) {
-      console.error('Error fetching wallet:', error);
+      console.error('Fetch error:', error);
     } finally {
       set({ isLoading: false });
     }
   },
 
-  topUp: async (amount: number) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      alert("Silakan login terlebih dahulu");
-      return;
-    }
+  
+  subscribeToWallet: () => {
+    let channel: any;
+    const setup = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
 
-    const payload: TransactionInsert = {
-      user_id: user.id,
-      type: 'TOPUP',
-      amount: amount,
-      description: `Top Up Saldo sebesar Rp ${amount.toLocaleString('id-ID')}`,
+      channel = supabase.channel(`wallet-${session.user.id}`)
+       
+        .on('postgres_changes' as any, 
+          { event: 'UPDATE', schema: 'public', table: 'wallets', filter: `user_id=eq.${session.user.id}` },
+          (p) => set({ balance: Number(p.new.balance) }))
+        
+        .on('postgres_changes' as any,
+          { event: 'INSERT', schema: 'public', table: 'transactions', filter: `user_id=eq.${session.user.id}` },
+          () => get().fetchWalletData())
+        .subscribe();
     };
-
-    const { error } = await supabase
-      .from('transactions')
-      .insert(payload as any); 
-
-    if (error) {
-      alert(error.message);
-    } else {
-      await get().fetchWalletData();
-    }
+    setup();
+    return () => { if (channel) supabase.removeChannel(channel); };
   },
 
+  // Fungsi Top Up
+  topUp: async (amount: number) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Login diperlukan");
+
+    const { error } = await (supabase.from('transactions' as any).insert({
+      user_id: session.user.id,
+      type: 'TOPUP',
+      amount: amount,
+      description: `Top Up Saldo Rp ${amount.toLocaleString('id-ID')}`,
+    } as any) as any);
+
+    if (error) throw error;
+  },
+
+  // Fungsi Tarik Tunai
   withdraw: async (amount: number) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Login diperlukan");
+
     const { balance } = get();
-    if (amount > balance) {
-      alert('Saldo tidak mencukupi!');
-      return;
-    }
+    if (amount > balance) throw new Error('Saldo tidak mencukupi!');
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const payload: TransactionInsert = {
-      user_id: user.id,
+    const { error } = await (supabase.from('transactions' as any).insert({
+      user_id: session.user.id,
       type: 'WITHDRAW',
-      amount: -amount,
-      description: `Tarik Tunai sebesar Rp ${amount.toLocaleString('id-ID')}`,
-    };
+      amount: -amount, 
+      description: `Tarik Tunai Rp ${amount.toLocaleString('id-ID')}`,
+    } as any) as any);
 
-    const { error } = await supabase
-      .from('transactions')
-      .insert(payload as any);
-
-    if (error) {
-      alert(error.message);
-    } else {
-      await get().fetchWalletData();
-    }
+    if (error) throw error;
   },
 
   payWithQR: async (amount: number, merchantName: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Login diperlukan");
+
     const { balance } = get();
-    if (amount > balance) {
-      alert('Saldo tidak mencukupi!');
-      return;
-    }
+    if (amount > balance) throw new Error('Saldo tidak mencukupi!');
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-
-    const payload: TransactionInsert = {
-      user_id: user.id,
+    const { error } = await (supabase.from('transactions' as any).insert({
+      user_id: session.user.id,
       type: 'PAYMENT',
       amount: -amount,
       description: `Pembayaran di ${merchantName}`,
-    };
+    } as any) as any);
 
-    const { error } = await supabase
-      .from('transactions')
-      .insert(payload as any);
+    if (error) throw error;
+  },
+
+  
+  transfer: async (recipientId: string, amount: number, recipientName: string) => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) throw new Error("Sesi berakhir, silakan login ulang.");
+    
+    const user = session.user;
+    if (user.id === recipientId) throw new Error("Tidak bisa transfer ke diri sendiri!");
+
+    const { balance } = get();
+    if (amount > balance) throw new Error('Saldo tidak mencukupi!');
+
+    
+    const { error } = await (supabase.from('transactions' as any).insert([
+      {
+        user_id: user.id, 
+        type: 'TRANSFER_OUT',
+        amount: -amount,
+        description: `Transfer ke ${recipientName}`,
+        recipient_id: recipientId,
+      },
+      {
+        user_id: recipientId, 
+        type: 'TRANSFER_IN',
+        amount: amount,
+        description: `Transfer dari ${user.email || 'Pengguna Lain'}`,
+        recipient_id: user.id,
+      }
+    ] as any) as any);
 
     if (error) {
-      alert(error.message);
-    } else {
-      await get().fetchWalletData();
+      console.error("Insert error:", error);
+      throw new Error(error.message);
     }
+    
+    // Refresh data setelah transaksi berhasil
+    await get().fetchWalletData();
   },
 
-  getFilteredTransactions: (filter?: string) => {
-    const { transactions } = get();
-    if (!filter) return transactions;
-    return transactions.filter((trx) => trx.type === filter);
-  },
+  
 }));

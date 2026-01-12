@@ -23,7 +23,7 @@ export default function LoginScreen() {
     if (error) {
       Alert.alert('Login Gagal', error.message);
     } else {
-      router.replace('/(tabs)'); // Masuk ke dashboard
+      router.replace('/(tabs)'); 
     }
     setLoading(false);
   }

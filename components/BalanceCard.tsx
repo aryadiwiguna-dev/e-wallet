@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert, TouchableOpacity } from 'react-native';
 import { Card, Button } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons'; // Import ikon
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
 import { ThemedText } from '@/components/themed-text';
 import { useCustomTheme } from '../context/ThemeContext';
 import { useWalletStore } from '../store/useWalletStore';
@@ -12,8 +12,8 @@ export default function BalanceCard() {
   const { balance, withdraw } = useWalletStore();
   const router = useRouter();
 
-  // State untuk kontrol visibilitas saldo
-  const [isVisible, setIsVisible] = useState(true);
+ 
+  const [isVisible, setIsVisible] = useState(false);
 
   const handleWithdraw = () => {
     const amount = 50000; 
@@ -104,7 +104,6 @@ export default function BalanceCard() {
           </TouchableOpacity>
         </View>
 
-        {/* Logika Tampilan Saldo */}
         <ThemedText style={styles.balanceAmount}>
           {isVisible 
             ? `Rp ${balance.toLocaleString('id-ID')}` 
